@@ -1,0 +1,17 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+src/pykpc/_version.py
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Python version
+.python-version
+
+# Virtual environments
+.venv

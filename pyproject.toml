@@ -1,0 +1,57 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=80.9.0", "setuptools-scm>=9.2.2"]
+
+[dependency-groups]
+dev = [
+  "ipython>=9.8.0",
+  "ruff>=0.14.10"
+]
+
+[project]
+authors = [
+  {name = "Jevin Sweval", email = "jevinsweval@gmail.com"}
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.15",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.11"
+]
+dependencies = [
+  "attrs>=25.4.0",
+  "cffi>=2.0.0",
+  "rich>=14.2.0"
+]
+description = "Python bindings for kpc interface in Apple's kperf"
+dynamic = ["version"]
+keywords = ["kpc", "kperf", "performance monitor"]
+license = "BSD-2-Clause"
+name = "pykpc"
+readme = {file = 'README.md', content-type = 'text/markdown'}
+requires-python = ">=3.11"  # for PyPy (and GraalPy I guess) compat
+
+[project.scripts]
+pykpc = "pykpc.tools.pykpc_util:main"
+
+[project.urls]
+repository = "https://github.com/jevinskie/pykpc"
+
+[tool.ruff]
+line-length = 100
+preview = true
+required-version = ">=0.14"
+show-fixes = true
+unsafe-fixes = true
+
+[tool.ruff.lint]
+extend-select = ["I", "PERF", "RUF", "FA", "UP"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools_scm]
+version_file = "src/pykpc/_version.py"
