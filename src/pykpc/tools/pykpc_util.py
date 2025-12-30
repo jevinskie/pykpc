@@ -5,6 +5,9 @@ import argparse
 
 def real_main(args: argparse.Namespace):
     print(f"args: {args}")
+    import pykpc.ffi
+
+    pykpc.ffi
 
 
 def get_arg_parser() -> argparse.ArgumentParser:
