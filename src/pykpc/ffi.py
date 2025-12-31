@@ -1,3 +1,5 @@
+# type: ignore
+
 from cffi import FFI
 
 ffi = FFI()
@@ -18,17 +20,35 @@ ffi.cdef("""
 #define KPC_ALL_CPUS 0x80000000
 typedef uint32_t kpc_classmask_t;
 typedef uint64_t kpc_config_t;
-extern int kpc_force_all_ctrs_set(int force);
-extern int kpc_force_all_ctrs_get(int *forcing);
-extern int kpc_get_thread_counters(int thread_id, uint32_t num_cntrs, uint64_t *cntrs);
-extern uint32_t kpc_get_config_count(kpc_classmask_t classes);
-extern uint32_t kpc_get_counter_count(kpc_classmask_t classes);
-extern kpc_classmask_t kpc_get_thread_counting(void);
-extern int kpc_set_thread_counting(kpc_classmask_t classes);
-extern int kpc_cpu_string(char *buf, size_t size);
-extern int kpc_pmu_version(void);
+
+int kpc_force_all_ctrs_set(int force);
+int kpc_force_all_ctrs_get(int *forcing);
+int kpc_get_thread_counters(int thread_id, uint32_t num_cntrs, uint64_t *cntrs);
+uint32_t kpc_get_config_count(kpc_classmask_t classes);
+uint32_t kpc_get_counter_count(kpc_classmask_t classes);
+kpc_classmask_t kpc_get_thread_counting(void);
+int kpc_set_thread_counting(kpc_classmask_t classes);
+int kpc_cpu_string(char *buf, size_t size);
+int kpc_pmu_version(void);
+
+typedef uint32_t u_int;
+int sysctl(int *name, u_int namelen, void *oldp, size_t *oldlenp, void *newp, size_t newlen);
+int sysctlbyname(const char *name, void *oldp, size_t *oldlenp, void *newp, size_t newlen);
+int sysctlnametomib(const char *name, int *mibp, size_t *sizep);
 """)
 C = ffi.dlopen("/System/Library/PrivateFrameworks/kperf.framework/kperf")
+D = ffi.dlopen(None)
+
+kver_node = ffi.new("char[]", b"kern.version")
+print(f"kver_node: {kver_node}")
+kver = ffi.new("char[1024]")
+kver_sz = ffi.new("size_t*", 1024)
+print(f"kver_sz: {kver_sz} {kver_sz[0]}")
+kver_res = D.sysctlbyname(kver_node, kver, kver_sz, ffi.NULL, 0)
+print(f"kver_res: {kver_res}")
+print(f"kver_sz: {kver_sz} {kver_sz[0]}")
+kver_str = ffi.string(kver)
+print(f"kver: {kver} {kver_str} len: {len(kver_str)}")
 
 pmu_ver = C.kpc_pmu_version()
 
@@ -51,9 +71,9 @@ gr2 = C.kpc_force_all_ctrs_get(forcing_out_arg)
 print(f"forcing_out 3: gr: {gr2} errno: {ffi.errno} {forcing_out_arg} {forcing_out_arg[0]}")
 
 
-for i in range(258):
-    r = C.kpc_get_config_count(i)
-    print(f"i: {i:3} i: {i:#07b} r: {r:3} r: {r:#07b}")
+# for i in range(258):
+#     r = C.kpc_get_config_count(i)
+#     print(f"i: {i:3} i: {i:#010b} r: {r:3} r: {r:#010b}")
 
 cfg_cnt_fixed = C.kpc_get_config_count(C.KPC_CLASS_CONFIGURABLE_MASK)
 
