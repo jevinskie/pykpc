@@ -39,6 +39,17 @@ int sysctlnametomib(const char *name, int *mibp, size_t *sizep);
 C = ffi.dlopen("/System/Library/PrivateFrameworks/kperf.framework/kperf")
 D = ffi.dlopen(None)
 
+
+def get_config_count(classes_mask: int) -> int:
+    node = ffi.new("char[]", b"kpc.counter_count")
+    ccnt = ffi.new("uint32_t*", 0)
+    ccnt_sz = ffi.new("size_t*", ffi.sizeof(ccnt))
+    cfg = ffi.new("kpc_classmask_t*", classes_mask)
+    r = D.sysctlbyname(node, ccnt, ccnt_sz, cfg, ffi.sizeof(cfg))
+    print(f"r: {r} ccnt_sz: {ccnt_sz[0]}")
+    return ccnt[0]
+
+
 kver_node = ffi.new("char[]", b"kern.version")
 print(f"kver_node: {kver_node}")
 kver = ffi.new("char[1024]")
@@ -49,6 +60,9 @@ print(f"kver_res: {kver_res}")
 print(f"kver_sz: {kver_sz} {kver_sz[0]}")
 kver_str = ffi.string(kver)
 print(f"kver: {kver} {kver_str} len: {len(kver_str)}")
+
+cnt = get_config_count(1 << 0)
+print(f"cnt: {cnt}")
 
 pmu_ver = C.kpc_pmu_version()
 
